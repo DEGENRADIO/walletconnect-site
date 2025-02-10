@@ -4,34 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connect Solana Wallet</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/solana-web3.js/1.76.0/solanaWeb3.min.js"></script>
+    <!-- Load Solana Wallet Adapter -->
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <script src="https://unpkg.com/@solana/wallet-adapter-wallets/lib/index.iife.js"></script>
+    <script src="https://unpkg.com/@solana/wallet-adapter-base/lib/index.iife.js"></script>
 </head>
 <body>
-    <h1>Connect Your Solana Wallet</h1>
-    <button id="connectWallet">Connect Wallet</button>
-    <p id="walletAddress">Not connected</p>
+    <h1>Connecting Your Solana Wallet...</h1>
+    <p id="walletAddress"></p>
 
     <script>
-        async function connectWallet() {
-            // Wait for Solana wallet to be injected
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        // Automatically trigger wallet connection when the page loads
+        (async () => {
+            try {
+                // Check if Phantom wallet is installed
+                if (!window.solana || !window.solana.isPhantom) {
+                    alert('Phantom wallet not found! Please install it.');
+                    return;
+                }
 
-            if (window.solflare) {
-                console.log("Solflare Wallet detected!");
-                const provider = window.solflare;
-                await provider.connect();
-                document.getElementById("walletAddress").innerText = `Connected: ${provider.publicKey.toString()}`;
-            } else if (window.solana && window.solana.isPhantom) {
-                console.log("Phantom Wallet detected!");
-                const provider = window.solana;
-                await provider.connect();
-                document.getElementById("walletAddress").innerText = `Connected: ${provider.publicKey.toString()}`;
-            } else {
-                alert("No Solana wallet detected. Please install Solflare or Phantom.");
+                // Connect to the wallet
+                const wallet = window.solana;
+                await wallet.connect();
+                const publicKey = wallet.publicKey.toString();
+
+                // Display the wallet address
+                document.getElementById('walletAddress').innerText = `Connected: ${publicKey}`;
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
             }
-        }
-
-        document.getElementById("connectWallet").addEventListener("click", connectWallet);
+        })();
     </script>
 </body>
 </html>
