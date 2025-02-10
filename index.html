@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Solana Wallet</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/solana-web3.js/1.76.0/solanaWeb3.min.js"></script>
+</head>
+<body>
+    <h1>Connect Your Solana Wallet</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <p id="walletAddress">Not connected</p>
+
+    <script>
+        async function connectWallet() {
+            let provider = null;
+
+            // Detect Phantom or Solflare
+            if (window.solflare && window.solflare.isSolflare) {
+                provider = window.solflare;
+            } else if (window.solana && window.solana.isPhantom) {
+                provider = window.solana;
+            }
+
+            if (!provider) {
+                alert("Solana wallet not detected. Please install Solflare or Phantom.");
+                return;
+            }
+
+            try {
+                await provider.connect();
+                document.getElementById("walletAddress").innerText = `Connected: ${provider.publicKey.toString()}`;
+            } catch (error) {
+                console.error("Wallet connection failed:", error);
+            }
+        }
+
+        document.getElementById("connectWallet").addEventListener("click", connectWallet);
+    </script>
+</body>
+</html>
