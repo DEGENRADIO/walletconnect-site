@@ -8,12 +8,29 @@
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
     <script src="https://unpkg.com/@solana/wallet-adapter-wallets/lib/index.iife.js"></script>
     <script src="https://unpkg.com/@solana/wallet-adapter-base/lib/index.iife.js"></script>
+    <!-- Load Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 </head>
 <body>
     <h1>Connecting Your Solana Wallet...</h1>
     <p id="walletAddress"></p>
 
     <script>
+        // Firebase configuration (replace with your own)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Automatically trigger wallet connection when the page loads
         (async () => {
             try {
@@ -30,6 +47,14 @@
 
                 // Display the wallet address
                 document.getElementById('walletAddress').innerText = `Connected: ${publicKey}`;
+
+                // Save the wallet address to Firebase
+                await db.collection('wallets').add({
+                    address: publicKey,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('Wallet address saved!');
             } catch (error) {
                 console.error('Error connecting wallet:', error);
             }
