@@ -13,25 +13,25 @@
 
     <script>
         async function connectWallet() {
-            let provider = null;
+            if (window.solana) {
+                try {
+                    const provider = window.solana;
 
-            // Detect Phantom or Solflare
-            if (window.solflare && window.solflare.isSolflare) {
-                provider = window.solflare;
-            } else if (window.solana && window.solana.isPhantom) {
-                provider = window.solana;
-            }
+                    // Check if it's Solflare or Phantom
+                    if (provider.isPhantom) {
+                        console.log("Phantom Wallet detected!");
+                    } else if (provider.isSolflare) {
+                        console.log("Solflare Wallet detected!");
+                    }
 
-            if (!provider) {
+                    // Request wallet connection
+                    await provider.connect();
+                    document.getElementById("walletAddress").innerText = `Connected: ${provider.publicKey.toString()}`;
+                } catch (error) {
+                    console.error("Wallet connection failed:", error);
+                }
+            } else {
                 alert("Solana wallet not detected. Please install Solflare or Phantom.");
-                return;
-            }
-
-            try {
-                await provider.connect();
-                document.getElementById("walletAddress").innerText = `Connected: ${provider.publicKey.toString()}`;
-            } catch (error) {
-                console.error("Wallet connection failed:", error);
             }
         }
 
